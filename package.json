@@ -1,0 +1,49 @@
+{
+  "name": "backdomo",
+  "version": "1.0.0",
+  "engines": {
+    "node": "10",
+    "npm": "6"
+  },
+  "description": "Backend for do-do technologies demo",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --experimental-modules index.mjs",
+    "dev": "NODE_ENV=development nodemon --experimental-modules index.mjs",
+    "precommit": "lint-staged",
+    "lint": "eslint ./**/*.js"
+  },
+  "lint-staged": {
+    "*.{js,json}": ["prettier --write", "git add"],
+    "*.{m,}js": ["eslint", "git add"]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dodohq/backdomo.git"
+  },
+  "author": "Stanley Nguyen <stanley@orende.io>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/dodohq/backdomo/issues"
+  },
+  "homepage": "https://github.com/dodohq/backdomo#readme",
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.2.1",
+    "mongoose": "^5.1.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.2.3",
+    "dotenv": "^5.0.1",
+    "eslint": "^4.19.1",
+    "eslint-config-google": "^0.9.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.1.0",
+    "nodemon": "^1.17.4",
+    "prettier": "^1.12.1"
+  }
+}
