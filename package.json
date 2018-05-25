@@ -31,12 +31,14 @@
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
+    "express-validator": "^5.2.0",
     "jsonwebtoken": "^8.2.1",
-    "mongoose": "^5.1.1"
+    "mongoose": "^5.1.1",
+    "mongoose-seed": "^0.4.1",
+    "dotenv": "^5.0.1"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.3",
-    "dotenv": "^5.0.1",
     "eslint": "^4.19.1",
     "eslint-config-google": "^0.9.1",
     "eslint-config-prettier": "^2.9.0",
