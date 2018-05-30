@@ -13,9 +13,10 @@ export default class UserAPI {
    * @param {string} password
    * @param {string} email
    * @param {boolean} isAdmin
+   * @param {string} companyID
    * @return {Promise}
    */
-  registerNewUser({ username, password, email, isAdmin }) {
+  registerNewUser({ username, password, email, isAdmin, companyID }) {
     return new Promise((resolve, reject) =>
       User.findOne({ username })
         .then(u => {
@@ -25,7 +26,12 @@ export default class UserAPI {
         .then(u => {
           if (u) reject(new Error409(`Email ${email} taken`));
 
-          const newUser = new User({ username, email, is_admin: isAdmin });
+          const newUser = new User({
+            username,
+            email,
+            is_admin: isAdmin,
+            company_id: companyID,
+          });
           newUser.password = newUser.encryptPassword(password);
           return newUser.save();
         })
