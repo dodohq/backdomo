@@ -17,13 +17,20 @@ router.post(
     userValidator.PASSWORD,
     userValidator.EMAIL,
     userValidator.ROLE,
+    userValidator.COMPANY_ID,
   ],
   valErrHandler,
   (req, res) => {
     // eslint-disable-next-line camelcase
-    const { username, password, email, is_admin } = req.body;
+    const { username, password, email, is_admin, company_id } = req.body;
     userApi
-      .registerNewUser({ username, password, email, isAdmin: is_admin })
+      .registerNewUser({
+        username,
+        password,
+        email,
+        isAdmin: is_admin,
+        companyID: company_id,
+      })
       .then(user => {
         res.status(201).json({ user });
       })

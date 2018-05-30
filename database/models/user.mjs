@@ -9,6 +9,16 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   is_admin: { type: Boolean, required: true },
+  company_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company',
+    required: [
+      function() {
+        return !this.is_admin; // eslint-disable-line no-invalid-this
+      },
+      '`company_id` is required if user is not admin',
+    ],
+  },
 });
 
 /**
