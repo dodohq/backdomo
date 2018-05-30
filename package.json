@@ -16,7 +16,7 @@
       "babel-node --plugins transform-es2015-modules-commonjs database/seed/index.mjs"
   },
   "lint-staged": {
-    "*.{js,json}": ["prettier --write", "git add"],
+    "*.{js,mjs,json}": ["prettier --write", "git add"],
     "*.{m,}js": ["eslint", "git add"]
   },
   "repository": {
