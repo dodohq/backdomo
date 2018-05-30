@@ -11,7 +11,9 @@
     "start": "node --experimental-modules index.mjs",
     "dev": "NODE_ENV=development nodemon --experimental-modules index.mjs",
     "precommit": "lint-staged",
-    "lint": "eslint ./**/*.js"
+    "lint": "eslint ./**/*.js",
+    "seed":
+      "babel-node --plugins transform-es2015-modules-commonjs database/seed/index.mjs"
   },
   "lint-staged": {
     "*.{js,json}": ["prettier --write", "git add"],
@@ -28,14 +30,17 @@
   },
   "homepage": "https://github.com/dodohq/backdomo#readme",
   "dependencies": {
+    "@babel/core": "^7.0.0-beta.49",
+    "@babel/node": "^7.0.0-beta.49",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.3",
+    "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "express-validator": "^5.2.0",
     "jsonwebtoken": "^8.2.1",
     "mongoose": "^5.1.1",
-    "mongoose-seed": "^0.4.1",
-    "dotenv": "^5.0.1"
+    "mongoose-seed": "^0.4.1"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.3",

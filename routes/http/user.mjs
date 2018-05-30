@@ -2,19 +2,28 @@ import express from 'express';
 
 import UserAPI from '../../api/user';
 import * as userValidator from '../../lib/validator/user';
-import * as userAuth from '../../middlewares/user_auth';
+import { AuthForRole, roles } from '../../middlewares/user_auth';
+import valErrHandler from '../../middlewares/validator_error_handler';
 
 const router = express.Router(); // eslint-disable-line new-cap
 const userApi = new UserAPI();
+const adminAuth = new AuthForRole(roles.ADMIN);
 
 router.post(
   '/register',
-  userAuth.check,
-  [userValidator.USERNAME, userValidator.PASSWORD, userValidator.EMAIL],
+  adminAuth.check,
+  [
+    userValidator.USERNAME,
+    userValidator.PASSWORD,
+    userValidator.EMAIL,
+    userValidator.ROLE,
+  ],
+  valErrHandler,
   (req, res) => {
-    const { username, password, email } = req.body;
+    // eslint-disable-next-line camelcase
+    const { username, password, email, is_admin } = req.body;
     userApi
-      .registerNewUser({ username, password, email })
+      .registerNewUser({ username, password, email, isAdmin: is_admin })
       .then(user => {
         res.status(201).json({ user });
       })
