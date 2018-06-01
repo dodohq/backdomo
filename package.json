@@ -35,12 +35,14 @@
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.3",
+    "bwip-js": "^1.6.3",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "express-validator": "^5.2.0",
     "jsonwebtoken": "^8.2.1",
     "mongoose": "^5.1.1",
-    "mongoose-seed": "^0.4.1"
+    "mongoose-seed": "^0.4.1",
+    "qrcode": "^1.2.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.3",
