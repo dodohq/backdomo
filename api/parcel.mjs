@@ -150,16 +150,27 @@ export default class ParcelAPI {
    * @param {string} id
    * @param {string} address
    * @param {string} customerContact
+   * @param {string} robotID
+   * @param {string} robotCompartment
    * @return {Promise}
    */
-  editParcelDetails({ id, address, dateOfDelivery, customerContact }) {
+  editParcelDetails({
+    id,
+    address,
+    dateOfDelivery,
+    customerContact,
+    robotID,
+    robotCompartment,
+  }) {
     return Parcel.findById({ id })
       .then(p => {
         if (!p) throw new Error404(`Parcel with ID ${id} not found`);
 
-        if (!address) p.address = address;
-        if (!dateOfDelivery) p.date_of_delivery = dateOfDelivery;
-        if (!customerContact) p.customer_contact = customerContact;
+        if (address) p.address = address;
+        if (dateOfDelivery) p.date_of_delivery = dateOfDelivery;
+        if (customerContact) p.customer_contact = customerContact;
+        if (robotID) p.robot_id = robotID;
+        if (robotCompartment) p.robot_compartment = robotCompartment;
         return p.save();
       })
       .catch(e => {
