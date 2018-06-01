@@ -144,4 +144,37 @@ export default class ParcelAPI {
       });
     });
   }
+
+  /**
+   * update parcel records in database
+   * @param {string} id
+   * @param {string} address
+   * @param {string} customerContact
+   * @return {Promise}
+   */
+  editParcelDetails({ id, address, dateOfDelivery, customerContact }) {
+    return Parcel.findById({ id })
+      .then(p => {
+        if (!p) throw new Error404(`Parcel with ID ${id} not found`);
+
+        if (!address) p.address = address;
+        if (!dateOfDelivery) p.date_of_delivery = dateOfDelivery;
+        if (!customerContact) p.customer_contact = customerContact;
+        return p.save();
+      })
+      .catch(e => {
+        throw new Error500(`Internal Server Error: ${e}`);
+      });
+  }
+
+  /**
+   * delete parcel record
+   * @param {string} id
+   * @return {Promise}
+   */
+  deleteParcel({ id }) {
+    return Parcel.findByIdAndDelete(id).catch(e => {
+      throw new Error500(`Internal Server Error: ${e}`);
+    });
+  }
 }
