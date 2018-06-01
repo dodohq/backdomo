@@ -11,7 +11,8 @@
     "no-console": "warn",
     "object-curly-spacing": 0,
     "new-cap": "warn",
-    "max-len": ["warn", { "code": 80, "ignoreUrls": true }]
+    "max-len": ["warn", { "code": 80, "ignoreUrls": true }],
+    "curly": ["error", "multi-line"]
   },
   "globals": {
     "Promise": true,
