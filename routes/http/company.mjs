@@ -4,6 +4,7 @@ import CompanyAPI from '../../api/company';
 import * as companyValidator from '../../lib/validator/company';
 import { AuthForRole, roles } from '../../middlewares/user_auth';
 import valErrHandler from '../../middlewares/validator_error_handler';
+import genericErrHandler from '../../lib/utils/http_generic_err_handler';
 
 const router = express.Router(); // eslint-disable-line new-cap
 const companyApi = new CompanyAPI();
@@ -21,10 +22,7 @@ router.post(
       .then(company => {
         res.status(201).json({ company });
       })
-      .catch(e => {
-        if (e.send) return e.send(res);
-        res.stauts(500).json({ message: `Error: ${e}` });
-      });
+      .catch(e => genericErrHandler(e, res));
   }
 );
 
@@ -32,10 +30,7 @@ router.get('/', adminAuth.check, (req, res) => {
   companyApi
     .getAllCompanies()
     .then(companies => res.status(200).json({ companies }))
-    .catch(e => {
-      if (e.send) return e.send(res);
-      res.status(500).json({ message: `Error: ${e}` });
-    });
+    .catch(e => genericErrHandler(e, res));
 });
 
 router.get('/:id', adminAuth.check, (req, res) => {
@@ -43,10 +38,7 @@ router.get('/:id', adminAuth.check, (req, res) => {
   companyApi
     .getCompanyByID({ id })
     .then(c => res.status(200).json(c))
-    .catch(e => {
-      if (e.send) return e.send(res);
-      res.status(500).json({ message: `Error: ${e}` });
-    });
+    .catch(e => genericErrHandler(e, res));
 });
 
 router.put(
@@ -59,10 +51,7 @@ router.put(
     companyApi
       .editCompany({ id, name })
       .then(c => res.status(200).json(c))
-      .catch(e => {
-        if (e.send) return e.send(res);
-        res.status(500).json({ message: `Error: ${e}` });
-      });
+      .catch(e => genericErrHandler(e, res));
   }
 );
 
@@ -76,10 +65,7 @@ router.delete(
     companyApi
       .deleteCompany({ id })
       .then(() => res.status(200).json({}))
-      .catch(e => {
-        if (e.send) return e.send(res);
-        res.status(500).json({ message: `Error: ${e}` });
-      });
+      .catch(e => genericErrHandler(e, res));
   }
 );
 

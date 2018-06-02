@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const RobotSchema = new mongoose.Schema({
   leaser_id: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Company',
     required: true,
   },

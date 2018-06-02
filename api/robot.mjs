@@ -13,7 +13,7 @@ export default class RobotAPI {
    */
   registerNewRobot({ companyID, model }) {
     const newRobot = new Robot({
-      company_id: companyID,
+      leaser_id: companyID,
       model,
     });
 
@@ -38,7 +38,7 @@ export default class RobotAPI {
    * @return {Promise}
    */
   getRobotOfACompany({ companyID }) {
-    return Robot.find({ company_id: companyID }).catch(e => {
+    return Robot.find({ leaser_id: companyID }).catch(e => {
       throw new Error500(`Database Error: ${e}`);
     });
   }
@@ -55,7 +55,7 @@ export default class RobotAPI {
       .then(r => {
         if (!r) throw new Error404(`Robot with ID ${id} not found`);
 
-        if (companyID) r.company_id = companyID;
+        if (companyID) r.leaser_id = companyID;
         if (model) r.model = model;
 
         return r.save();
