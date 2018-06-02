@@ -1,3 +1,5 @@
+import jwt from 'jsonwebtoken';
+
 import Robot from '../database/models/robot';
 import { Error500, Error404 } from '../lib/errors/http';
 
@@ -74,5 +76,31 @@ export default class RobotAPI {
     return Robot.findByIdAndDelete(id).catch(e => {
       throw new Error500(`Database Error: ${e}`);
     });
+  }
+
+  /**
+   * generate a signed token for a robot
+   * @param {string} id
+   * @return {Promise}
+   */
+  generateRobotToken({ id }) {
+    return new Promise((resolve, reject) =>
+      Robot.findById(id).then(r => {
+        if (!r) {
+          return reject(new Error404(`Robot with ID ${id} doesnt exist`));
+        }
+
+        const robot = r._doc;
+        robot.is_robot = true;
+
+        jwt.sign(robot, process.env.JWT_SECRET, (err, token) => {
+          if (err) {
+            return reject(new Error500('Error during token generation'));
+          }
+
+          resolve(token);
+        });
+      })
+    );
   }
 }

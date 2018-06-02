@@ -69,4 +69,13 @@ router.delete('/:id', adminAuth.check, (req, res) => {
     .catch(e => genericErrHandler(e, res));
 });
 
+router.get('/token/:id', adminAuth.check, (req, res) => {
+  const { id } = req.params;
+
+  robotApi
+    .generateRobotToken({ id })
+    .then(token => res.status(200).json({ token }))
+    .catch(e => genericErrHandler(e, res));
+});
+
 export default router;

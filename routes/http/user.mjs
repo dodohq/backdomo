@@ -38,6 +38,7 @@ router.post(
       .catch(e => genericErrHandler(e, res));
   }
 );
+
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
   userApi
