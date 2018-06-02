@@ -162,7 +162,7 @@ export default class ParcelAPI {
     robotID,
     robotCompartment,
   }) {
-    return Parcel.findById({ id })
+    return Parcel.findById(id)
       .then(p => {
         if (!p) throw new Error404(`Parcel with ID ${id} not found`);
 
