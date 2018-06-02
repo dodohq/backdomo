@@ -110,7 +110,11 @@ export default class ParcelAPI {
           if (!p) return reject(new Error404(`Parcel with ID ${id} not found`));
 
           resolve(
-            QRCode.toFileStream(writableStream, p.password, { scale: 10 })
+            QRCode.toFileStream(
+              writableStream,
+              JSON.stringify({ id: p._id, password: p.password }),
+              { scale: 10 }
+            )
           );
         })
         .catch(e => reject(new Error500(`Internal Server Error: ${e}`))),
