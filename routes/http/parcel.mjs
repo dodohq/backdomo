@@ -5,6 +5,7 @@ import * as parcelValidator from '../../lib/validator/parcel';
 import { AuthForRole, roles } from '../../middlewares/user_auth';
 import valErrHandler from '../../middlewares/validator_error_handler';
 import { Error401 } from '../../lib/errors/http';
+import genericErrHandler from '../../lib/utils/http_generic_err_handler';
 
 const router = express.Router(); // eslint-disable-line new-cap
 const parcelApi = new ParcelAPI();
@@ -39,10 +40,7 @@ router.post(
         parcel.password = undefined;
         res.status(200).json({ parcel });
       })
-      .catch(e => {
-        if (e.send) return e.send(res);
-        res.status(500).json(`Internal Server Error: ${e}`);
-      });
+      .catch(e => genericErrHandler(e, res));
   }
 );
 
@@ -63,10 +61,7 @@ router.get(
           ),
         });
       })
-      .catch(e => {
-        if (e.send) return e.send(res);
-        res.status(500).json(`Internal Server Error: ${e}`);
-      });
+      .catch(e => genericErrHandler(e, res));
   }
 );
 
@@ -88,10 +83,7 @@ router.get('/barcode/:id', userAuth.check, (req, res) => {
       res.set('Content-Type', 'image/png');
       res.end(png);
     })
-    .catch(e => {
-      if (e.send) return e.send(res);
-      res.status(500).json({ message: `Internal Server Error: ${e}` });
-    });
+    .catch(e => genericErrHandler(e, res));
 });
 
 /**
@@ -108,10 +100,7 @@ router.get(
       .getParcelByID({ id })
       .then(p => parcelApi.getParcelToken(p._doc))
       .then(token => res.status(200).json({ token }))
-      .catch(e => {
-        if (e.send) return e.send(res);
-        res.status(500).json({ message: `Internal Server Error: ${e}` });
-      });
+      .catch(e => genericErrHandler(e, res));
   }
 );
 
@@ -121,10 +110,11 @@ router.get('/qrcode/:parcel_token', (req, res) => {
   parcelApi
     .decodeParcelToken(parcelToken)
     .then(({ _id: id }) => parcelApi.getParcelQRCode({ id }, res))
-    .catch(e => {
-      if (e.send) return e.send(res);
-      res.status(500).json({ message: `Internal Server Error: ${e}` });
-    });
+    .catch(e => genericErrHandler(e, res));
 });
+
+// router.post('/load',  (req, res) => {
+//   const
+// })
 
 export default router;

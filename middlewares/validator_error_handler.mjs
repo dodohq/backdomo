@@ -5,9 +5,7 @@ export default (req, res, next) => {
   const errors = check.validationResult(req);
   // console.log(errors.array().map(e => JSON.stringify(e)));
   if (!errors.isEmpty()) {
-    return new Error422(
-      errors.array().map(e => console.log(e) || JSON.stringify(e))
-    ).send(res);
+    return new Error422(errors.array().map(e => JSON.stringify(e))).send(res);
   }
   next();
 };

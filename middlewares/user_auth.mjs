@@ -8,6 +8,7 @@ import { Error401, Error500 } from '../lib/errors/http';
 export const roles = {
   ADMIN: 'admin',
   USER: 'user',
+  ROBOT: 'robot',
 };
 
 /**
@@ -36,6 +37,10 @@ export class AuthForRole {
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) return new Error500(err.message).send(res);
+      if (this.role === roles.ROBOT) {
+        // no expiry for robot token
+        decoded.exp = Infinity;
+      }
       if (decoded.exp <= Date.now() / 1000) {
         return new Error401('Token Expired').send(res);
       }

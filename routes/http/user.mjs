@@ -4,6 +4,7 @@ import UserAPI from '../../api/user';
 import * as userValidator from '../../lib/validator/user';
 import { AuthForRole, roles } from '../../middlewares/user_auth';
 import valErrHandler from '../../middlewares/validator_error_handler';
+import genericErrHandler from '../../lib/utils/http_generic_err_handler';
 
 const router = express.Router(); // eslint-disable-line new-cap
 const userApi = new UserAPI();
@@ -34,12 +35,10 @@ router.post(
       .then(user => {
         res.status(201).json({ user });
       })
-      .catch(e => {
-        if (e.send) return e.send(res);
-        res.status(500).json({ message: `Error: ${e}` });
-      });
+      .catch(e => genericErrHandler(e, res));
   }
 );
+
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
   userApi
@@ -47,10 +46,7 @@ router.post('/login', (req, res) => {
     .then(token => {
       res.status(200).json({ token });
     })
-    .catch(e => {
-      if (e.send) return e.send(res);
-      res.status(500).json({ message: `Error: ${e}` });
-    });
+    .catch(e => genericErrHandler(e, res));
 });
 
 export default router;
