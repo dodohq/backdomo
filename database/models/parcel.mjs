@@ -22,6 +22,9 @@ const ParcelSchema = new mongoose.Schema({
   },
 });
 
-ParcelSchema.index({ robot_id: 1, robot_compartment: 1 }, { unique: true });
+ParcelSchema.index(
+  { robot_id: 1, robot_compartment: 1 },
+  { sparse: true, unique: true }
+);
 
 export default mongoose.model('Parcel', ParcelSchema);

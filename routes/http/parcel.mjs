@@ -4,12 +4,14 @@ import ParcelAPI from '../../api/parcel';
 import * as parcelValidator from '../../lib/validator/parcel';
 import { AuthForRole, roles } from '../../middlewares/user_auth';
 import valErrHandler from '../../middlewares/validator_error_handler';
-import { Error401 } from '../../lib/errors/http';
+import { Error401, Error404 } from '../../lib/errors/http';
 import genericErrHandler from '../../lib/utils/http_generic_err_handler';
+import RobotAuth from '../../middlewares/robot_auth';
 
 const router = express.Router(); // eslint-disable-line new-cap
 const parcelApi = new ParcelAPI();
 const userAuth = new AuthForRole(roles.USER);
+const robotAuth = new RobotAuth();
 
 router.post(
   '/',
@@ -77,8 +79,9 @@ router.get('/barcode/:id', userAuth.check, (req, res) => {
           `Parcel with ID ${id} does not belongs to your company`
         );
       }
+
+      return parcelApi.getParcelBarCode({ id });
     })
-    .then(parcelApi.getParcelBarCode.bind(null, { id }))
     .then(png => {
       res.set('Content-Type', 'image/png');
       res.end(png);
@@ -113,8 +116,86 @@ router.get('/qrcode/:parcel_token', (req, res) => {
     .catch(e => genericErrHandler(e, res));
 });
 
-// router.post('/load',  (req, res) => {
-//   const
-// })
+router.post(
+  '/load',
+  robotAuth.check,
+  [parcelValidator.ROBOT_ID, parcelValidator.ROBOT_COMPARTMENT],
+  valErrHandler,
+  (req, res) => {
+    const { _id: robotID } = req.robot;
+    const { robot_compartment: robotCompartment, id } = req.body;
+
+    parcelApi
+      .editParcelDetails({ id, robotID, robotCompartment })
+      .then(p => res.status(200).json(p))
+      .catch(e => genericErrHandler(e, res));
+  }
+);
+
+router.post(
+  '/unlock',
+  robotAuth.check,
+  [parcelValidator.ID, parcelValidator.PASSWORD],
+  valErrHandler,
+  (req, res) => {
+    const { _id: robotID } = req.robot;
+    const { id, password } = req.body;
+
+    parcelApi
+      .getParcelByID({ id })
+      .then(p => {
+        if (password !== p.password) {
+          throw new Error401('Wrong unlocking password');
+        } else if (!p.robot_id || robotID !== p.robot_id.toString()) {
+          throw new Error404('Parcel is not on this robot');
+        }
+
+        res.status(200).json(p);
+      })
+      .catch(e => genericErrHandler(e, res));
+  }
+);
+
+router.put(
+  '/',
+  userAuth.check,
+  [
+    parcelValidator.ADDRESS_OPTIONAL,
+    parcelValidator.DATE_OF_DELIVERY_OPTIONAL,
+    parcelValidator.CUSTOMER_CONTACT_OPTIONAL,
+  ],
+  valErrHandler,
+  (req, res) => {
+    const {
+      id,
+      address,
+      date_of_delivery: dateOfDelivery,
+      customer_contact: customerContact,
+    } = req.body;
+    const { company_id: userCompanyID } = req.user;
+
+    parcelApi
+      .getParcelByID({ id })
+      .then(p => {
+        if (userCompanyID !== p.company_id.toString()) {
+          throw new Error401(
+            `Parcel with ID ${id} does not belongs to your company`
+          );
+        }
+
+        return parcelApi.editParcelDetails({
+          id,
+          address,
+          dateOfDelivery,
+          customerContact,
+        });
+      })
+      .then(p => {
+        p.password = undefined;
+        res.status(200).json(p);
+      })
+      .catch(e => genericErrHandler(e, res));
+  }
+);
 
 export default router;
