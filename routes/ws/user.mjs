@@ -11,14 +11,11 @@ const userWSServer = new WebSocket.Server({
 });
 
 userWSServer.on('connection', (cli, upgradeReq) => {
-  console.log('hello');
   const { token, robot_id: robotID } = getQueryParams(upgradeReq.url);
-  console.log(token);
   if (!token) return cli.close();
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) return cli.close();
-    console.log(decoded);
     if (decoded.exp <= Date.now() / 1000) {
       return cli.close();
     }

@@ -29,8 +29,8 @@ class RobotWS {
    */
   join(client, robotID) {
     if (!this.rooms[robotID]) {
-      client.isController = true;
       this.rooms[robotID] = { [client.id]: client };
+      this.command(robotID, 'start');
     } else if (!this.rooms[robotID][client.id]) {
       this.rooms[robotID][client.id] = client;
     }
@@ -44,7 +44,12 @@ class RobotWS {
   leave(clientID, robotID) {
     if (this.rooms[robotID]) {
       if (this.rooms[robotID][clientID]) {
-        this.rooms[robotID][clientID] = undefined;
+        delete this.rooms[robotID][clientID];
+      }
+
+      if (Object.keys(this.rooms[robotID]).length === 0) {
+        this.command(robotID, 'end');
+        delete this.rooms[robotID];
       }
     }
   }
@@ -59,6 +64,9 @@ class RobotWS {
       robotCli.close();
     } else {
       this.robots[robotID] = robotCli;
+      if (this.rooms[robotID]) {
+        robotCli.send('start');
+      }
     }
   }
 
@@ -66,9 +74,9 @@ class RobotWS {
    * deregister a robot's client
    * @param {string} robotID
    */
-  deresgiter(robotID) {
+  deregister(robotID) {
     if (this.robots[robotID]) {
-      this.robots[robotID] = undefined;
+      delete this.robots[robotID];
     }
   }
 
@@ -78,17 +86,26 @@ class RobotWS {
    * @param {Buffer} data
    */
   broadCast(roomID, data) {
-    this.rooms[roomID].forEach(cli => {
-      if (cli.readyState === WebSocket.OPEN) {
-        cli.send(data);
-      }
-    });
+    if (this.rooms[roomID]) {
+      Object.values(this.rooms[roomID]).forEach(cli => {
+        if (cli.readyState === WebSocket.OPEN) {
+          cli.send(data);
+        }
+      });
+    }
   }
 
   /**
    * send command to robot
    * @param {string} robotID
-   * @param {enum<'up','down','left','right'>} cmd
+   * @param {enum<'start', 'end', 'up','down','left','right'>} cmd
+   * corresponds to
+   * - start streaming
+   * - stop streaming
+   * - go forward
+   * - go backward
+   * - turn left
+   * - turn right
    */
   command(robotID, cmd) {
     if (this.robots[robotID]) {
