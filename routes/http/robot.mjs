@@ -1,14 +1,20 @@
 import express from 'express';
+import path from 'path';
+import fs from 'fs';
 
 import RobotAPI from '../../api/robot';
 import * as robotValidator from '../../lib/validator/robot';
 import { AuthForRole, roles } from '../../middlewares/user_auth';
 import valErrHandler from '../../middlewares/validator_error_handler';
 import genericErrHandler from '../../lib/utils/http_generic_err_handler';
+import RobotAuth from '../../middlewares/robot_auth';
+import robotWS from '../../websocket/robot';
+import { Error500 } from '../../lib/errors/http';
 
 const router = express.Router(); // eslint-disable-line new-cap
 const robotApi = new RobotAPI();
 const adminAuth = new AuthForRole(roles.ADMIN);
+const robotAuth = new RobotAuth();
 
 router.post(
   '/',
@@ -76,6 +82,26 @@ router.get('/token/:id', adminAuth.check, (req, res) => {
     .generateRobotToken({ id })
     .then(token => res.status(200).json({ token }))
     .catch(e => genericErrHandler(e, res));
+});
+
+router.use('/stream', robotAuth.check, (req, res) => {
+  const { _id: robotID } = req.robot;
+
+  req.connection.setTimeout(0);
+  req.on('data', data => robotWS.broadCast(robotID, data));
+  req.on('end', () => res.end());
+});
+
+// for testing of socket purpose only
+// will remove once socket functionalities are done
+router.get('/view_stream', adminAuth.check, (req, res) => {
+  fs.readFile(path.resolve('./routes/http/robot.html'), (err, data) => {
+    if (err) return genericErrHandler(new Error500(err.message), res);
+
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.write(data);
+    res.end();
+  });
 });
 
 export default router;
