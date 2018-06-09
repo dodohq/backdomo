@@ -29,6 +29,7 @@
 
     var url = 'ws://' + document.location.hostname + ':8080/user?token=' + token + '&robot_id=' + robot_id;
     var player = new JSMpeg.Player(url, { canvas: canvas });
+    var wscli = player.source.socket;
   </script>
 </body>
 

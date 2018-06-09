@@ -24,6 +24,13 @@ userWSServer.on('connection', (cli, upgradeReq) => {
     cli.id = decoded._id;
     cli.robotID = robotID;
     robotWS.join(cli, robotID);
+    cli.on('message', msg => {
+      if (['up', 'down', 'left', 'right'].indexOf(msg) < 0) {
+        return;
+      }
+
+      robotWS.command(cli.robotID, msg);
+    });
     cli.on('close', () => robotWS.leave(cli.id, robotID));
   });
 });
