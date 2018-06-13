@@ -1,17 +1,20 @@
 import express from 'express';
 
 import ParcelAPI from '../../api/parcel';
+import CompanyAPI from '../../api/company';
 import * as parcelValidator from '../../lib/validator/parcel';
 import { AuthForRole, roles } from '../../middlewares/user_auth';
 import valErrHandler from '../../middlewares/validator_error_handler';
-import { Error401, Error404 } from '../../lib/errors/http';
+import { Error401, Error404, Error500 } from '../../lib/errors/http';
 import genericErrHandler from '../../lib/utils/http_generic_err_handler';
 import RobotAuth from '../../middlewares/robot_auth';
 
 const router = express.Router(); // eslint-disable-line new-cap
 const parcelApi = new ParcelAPI();
+const companyApi = new CompanyAPI();
 const userAuth = new AuthForRole(roles.USER);
 const robotAuth = new RobotAuth();
+const adminAuth = new AuthForRole(roles.ADMIN);
 
 router.post(
   '/',
@@ -155,6 +158,36 @@ router.post(
       .catch(e => genericErrHandler(e, res));
   }
 );
+
+router.post('/sms', adminAuth.check, [parcelValidator.ID], (req, res) => {
+  const { id } = req.body;
+
+  parcelApi
+    .getParcelByID({ id })
+    .then(p =>
+      Promise.all([p, companyApi.getCompanyByID({ id: p._doc.company_id })])
+    )
+    .then(([p, company]) => {
+      const parcel = Object.assign({}, p._doc, { company: company._doc });
+      return Promise.all([parcelApi.getParcelToken(p._doc), parcel]);
+    })
+    .then(([token, p]) => {
+      if (!p.company) throw new Error500('Orphan parcel');
+
+      const trimmedToken = token.replace(/\s/g, '');
+      const content = `Your parcel from ${
+        p.company.name
+      } has arrive.\nPlease enter:\nID: ${p._id} Password: ${
+        p.password
+      }\nOr go to this link: https://${
+        req.hostname
+      }/api/parcel/qrcode/${trimmedToken} for the QR Code`;
+
+      return parcelApi.sendSMSToCustomer(p.customer_contact, content);
+    })
+    .then(() => res.status(200).json({}))
+    .catch(e => genericErrHandler(e, res));
+});
 
 router.put(
   '/',

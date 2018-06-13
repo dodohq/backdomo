@@ -1,6 +1,7 @@
 import bwipjs from 'bwip-js';
 import QRCode from 'qrcode';
 import jwt from 'jsonwebtoken';
+import twilio from 'twilio';
 
 import Parcel from '../database/models/parcel';
 import { Error500, Error404 } from '../lib/errors/http';
@@ -191,5 +192,24 @@ export default class ParcelAPI {
     return Parcel.findByIdAndDelete(id).catch(e => {
       throw new Error500(`Internal Server Error: ${e}`);
     });
+  }
+
+  /**
+   * send SMS to customer
+   * @param {string} customerContact
+   * @param {string} content
+   * @return {Promise}
+   */
+  sendSMSToCustomer(customerContact, content) {
+    const twilioCli = twilio(process.env.TWILIO_ID, process.env.TWILIO_TOKEN);
+    return twilioCli.messages
+      .create({
+        body: content,
+        from: process.env.TWILIO_NUMBER,
+        to: customerContact,
+      })
+      .catch(e => {
+        throw new Error500(`Internal Server Error: ${e.message}`);
+      });
   }
 }

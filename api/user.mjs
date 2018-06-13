@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 import User from '../database/models/user';
-import { Error500, Error409, Error404 } from '../lib/errors/http';
+import { Error500, Error409, Error404, Error401 } from '../lib/errors/http';
 
 /**
  * UserAPI handling all user related operations
@@ -58,9 +58,12 @@ export default class UserAPI {
             reject(new Error401(`Wrong credentials`));
           }
 
-          resolve(
-            jwt.sign(u._doc, process.env.JWT_SECRET, { expiresIn: '720h' })
-          );
+          resolve({
+            token: jwt.sign(u._doc, process.env.JWT_SECRET, {
+              expiresIn: '720h',
+            }),
+            is_admin: u.is_admin,
+          });
         })
         .catch(e => reject(new Error500(`Internal Server Error: ${e}`)))
     );

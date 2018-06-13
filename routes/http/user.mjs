@@ -43,8 +43,8 @@ router.post('/login', (req, res) => {
   const { username, password } = req.body;
   userApi
     .login({ username, password })
-    .then(token => {
-      res.status(200).json({ token });
+    .then(details => {
+      res.status(200).json(details);
     })
     .catch(e => genericErrHandler(e, res));
 });
