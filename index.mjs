@@ -8,6 +8,7 @@ import http from 'http';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import url from 'url';
+import cors from 'cors';
 
 import httpRouter from './routes/http';
 import { robotWSS, userWSS } from './routes/ws';
@@ -18,6 +19,7 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
 
 app.use('/api', httpRouter);
 
