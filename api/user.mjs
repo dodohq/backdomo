@@ -68,4 +68,71 @@ export default class UserAPI {
         .catch(e => reject(new Error500(`Internal Server Error: ${e}`)))
     );
   }
+
+  /**
+   * get all users in database
+   * @return {Promise}
+   */
+  queryAllUsers() {
+    return User.find({}).catch(e =>
+      reject(new Error500(`Internal Server Error: ${e}`))
+    );
+  }
+
+  /**
+   * get an user by ID
+   * @param {string} id
+   * @return {Promise}
+   */
+  queryUserByID({ id }) {
+    return User.findById(id)
+      .then(u => {
+        if (!u) throw new Error404(`User with ID ${id} doesnt exist`);
+
+        return u;
+      })
+      .catch(e => reject(new Error500(`Internal Server Error: ${e}`)));
+  }
+
+  /**
+   * edit details of an user
+   * @param {string} id
+   * @param {string} email
+   * @param {string} password
+   * @param {string} companyID
+   * @return {Promise}
+   */
+  editUserDetails({ id, email, isAdmin, password, companyID }) {
+    return User.findById(id)
+      .then(u => {
+        if (!u) throw new Error404(`User with ID ${id} not found`);
+
+        if (email) u.email = email;
+        if (isAdmin !== undefined) {
+          u.is_admin = isAdmin;
+          if (isAdmin) {
+            u.company_id = null;
+            companyID = null;
+          }
+        }
+        if (password) u.password = u.encryptPassword(password);
+        if (companyID) u.company_id = companyID;
+
+        return u.save();
+      })
+      .catch(e => {
+        throw new Error500(`Internal Server Error: ${e}`);
+      });
+  }
+
+  /**
+   * Delete user record from db
+   * @param {string} id
+   * @return {Promise}
+   */
+  deleteUserByID({ id }) {
+    return User.findByIdAndDelete(id).catch(e =>
+      reject(new Error500(`Internal Server Error: ${e}`))
+    );
+  }
 }
