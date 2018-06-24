@@ -110,7 +110,7 @@ export default class UserAPI {
         if (email) u.email = email;
         if (isAdmin !== undefined) {
           u.is_admin = isAdmin;
-          if (isAdmin) {
+          if (isAdmin && isAdmin !== 'false') {
             u.company_id = null;
             companyID = null;
           }
