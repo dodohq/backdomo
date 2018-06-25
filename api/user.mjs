@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-import User from '../database/models/user';
+import { User } from '../database/models';
 import { Error500, Error409, Error404, Error401 } from '../lib/errors/http';
 
 /**
@@ -131,7 +131,7 @@ export default class UserAPI {
    * @return {Promise}
    */
   deleteUserByID({ id }) {
-    return User.findByIdAndDelete(id).catch(e =>
+    return User.findOneAndRemove({ _id: id }).catch(e =>
       reject(new Error500(`Internal Server Error: ${e}`))
     );
   }

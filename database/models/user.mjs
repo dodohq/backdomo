@@ -35,4 +35,4 @@ UserSchema.methods.encryptPassword = p =>
  */
 UserSchema.methods.checkPassword = (p, h) => bcrypt.compareSync(p, h);
 
-export default mongoose.model('User', UserSchema);
+export default UserSchema;

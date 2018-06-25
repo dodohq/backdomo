@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-import Robot from '../database/models/robot';
+import { Robot } from '../database/models';
 import { Error500, Error404 } from '../lib/errors/http';
 
 /**
@@ -73,7 +73,7 @@ export default class RobotAPI {
    * @return {Promise}
    */
   deleteRobot({ id }) {
-    return Robot.findByIdAndDelete(id).catch(e => {
+    return Robot.findOneAndRemove({ _id: id }).catch(e => {
       throw new Error500(`Database Error: ${e}`);
     });
   }

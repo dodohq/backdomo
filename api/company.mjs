@@ -1,4 +1,4 @@
-import Company from '../database/models/company';
+import { Company } from '../database/models';
 import { Error500, Error409, Error404 } from '../lib/errors/http';
 
 /**
@@ -89,7 +89,7 @@ export default class CompanyAPI {
    */
   deleteCompany({ id }) {
     return new Promise((resolve, reject) => {
-      Company.findByIdAndDelete(id)
+      Company.findOneAndRemove({ _id: id })
         .then(resolve)
         .catch(e =>
           reject(new Error500(`Internal Server Error: ${JSON.stringify(e)}`))

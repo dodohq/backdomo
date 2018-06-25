@@ -27,4 +27,4 @@ ParcelSchema.index(
   { sparse: true, unique: true }
 );
 
-export default mongoose.model('Parcel', ParcelSchema);
+export default ParcelSchema;

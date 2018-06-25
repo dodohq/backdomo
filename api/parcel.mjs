@@ -3,7 +3,7 @@ import QRCode from 'qrcode';
 import jwt from 'jsonwebtoken';
 import twilio from 'twilio';
 
-import Parcel from '../database/models/parcel';
+import { Parcel } from '../database/models';
 import { Error500, Error404 } from '../lib/errors/http';
 import randomDigits from '../lib/utils/random_digits';
 
@@ -189,7 +189,7 @@ export default class ParcelAPI {
    * @return {Promise}
    */
   deleteParcel({ id }) {
-    return Parcel.findByIdAndDelete(id).catch(e => {
+    return Parcel.findOneAndRemove({ _id: id }).catch(e => {
       throw new Error500(`Internal Server Error: ${e}`);
     });
   }

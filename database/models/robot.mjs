@@ -18,4 +18,4 @@ const RobotSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model('Robot', RobotSchema);
+export default RobotSchema;
