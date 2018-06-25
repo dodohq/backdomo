@@ -231,4 +231,22 @@ router.put(
   }
 );
 
+router.delete('/:id', userAuth.check, (req, res) => {
+  const { id } = req.params;
+
+  parcelApi
+    .getParcelByID({ id })
+    .then(p => {
+      if (p.company_id.toString() !== req.user.company_id) {
+        throw new Error401(
+          `Parcel with ID ${id} doesn't belongs to your company`
+        );
+      }
+
+      return parcelApi.deleteParcel({ id });
+    })
+    .then(() => res.status(200).json({}))
+    .catch(e => genericErrHandler(e, res));
+});
+
 export default router;
