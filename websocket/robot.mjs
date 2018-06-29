@@ -134,7 +134,6 @@ class RobotWS {
    * @param {any} locationData
    */
   setLocation(robotID, locationData) {
-    console.log(robotID);
     this.locations[robotID] = JSON.parse(locationData);
   }
 
