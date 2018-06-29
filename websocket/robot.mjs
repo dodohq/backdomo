@@ -112,6 +112,14 @@ class RobotWS {
       this.robots[robotID].send(cmd);
     }
   }
+
+  /**
+   * Get list of all connected robots
+   * @return {Array.<Object>}
+   */
+  getOnlineRobots() {
+    return Object.keys(this.robots);
+  }
 }
 
 export default new RobotWS();

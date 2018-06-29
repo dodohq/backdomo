@@ -92,6 +92,11 @@ router.use('/stream', robotAuth.check, (req, res) => {
   req.on('end', () => res.end());
 });
 
+router.get('/online', adminAuth.check, (req, res) => {
+  const robots = robotWS.getOnlineRobots();
+  res.status(200).json({ robots });
+});
+
 // for testing of socket purpose only
 // will remove once socket functionalities are done
 router.get('/view_stream', adminAuth.check, (req, res) => {
