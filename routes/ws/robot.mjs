@@ -20,6 +20,7 @@ robotStreamingWSServer.on('connection', (cli, upgradeReq) => {
 
     robotWS.register(decoded._id, cli);
     cli.on('close', () => robotWS.deregister(decoded._id));
+    cli.on('message', gpsData => robotWS.setLocation(decoded._id, gpsData));
   });
 });
 
