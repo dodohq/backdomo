@@ -2,6 +2,7 @@ import websocket
 import subprocess
 import os
 import signal
+import random
 
 try:
     import thread
@@ -12,7 +13,6 @@ import time
 WSSERVER = 'ws://localhost:8080'
 STREAMSERVER = 'http://localhost:8080'
 TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YjEyODczZGQ1ZDU3NmZmMTQ0MDNlMDMiLCJsZWFzZXJfaWQiOiI1YjBlNDE2NWY3ZGI5MTZkMjIwOWU0Y2YiLCJtb2RlbCI6IlYxIiwic3RhcnRfZGF0ZSI6IjIwMTgtMDYtMDJUMTI6MDI6MDUuMDcyWiIsIl9fdiI6MCwiaXNfcm9ib3QiOnRydWUsImlhdCI6MTUyODQyMTkwMX0.N7wCginHLLpL92mo9yQExbrY-4xxhwImRnldZydo5cA'
-
 
 def on_message(ws, message):
     if message == 'start':
@@ -45,6 +45,12 @@ def on_close(ws):
 
 def on_open(ws):
     print('### opened ###')
+    while True:
+      sample_gps_data = '{ "x": %.4f, "y": %.4f }' % (random.random() * 100, random.random() * 100)
+      print('sending', sample_gps_data)
+      print(time.time() * 1000)
+      ws.send(sample_gps_data)
+      time.sleep(3)
 
 
 if __name__ == "__main__":

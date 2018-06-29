@@ -20,6 +20,13 @@ class RobotWS {
      * @private {object<string:ws.Client>} robots
      */
     this.robots = {};
+
+    /**
+     * list of robots locations
+     * robotID is used as key
+     * @private {object<string:GPSData} locations
+     */
+    this.locations = {};
   }
 
   /**
@@ -119,6 +126,24 @@ class RobotWS {
    */
   getOnlineRobots() {
     return Object.keys(this.robots);
+  }
+
+  /**
+   * set location of a robot
+   * @param {string} robotID
+   * @param {any} locationData
+   */
+  setLocation(robotID, locationData) {
+    this.locations[robotID] = locationData;
+  }
+
+  /**
+   * get location of a robot
+   * @param {string} robotID
+   * @return {any}
+   */
+  getLocation(robotID) {
+    return this.locations[robotID];
   }
 }
 
