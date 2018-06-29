@@ -9,7 +9,7 @@ import valErrHandler from '../../middlewares/validator_error_handler';
 import genericErrHandler from '../../lib/utils/http_generic_err_handler';
 import RobotAuth from '../../middlewares/robot_auth';
 import robotWS from '../../websocket/robot';
-import { Error500 } from '../../lib/errors/http';
+import { Error500, Error404 } from '../../lib/errors/http';
 
 const router = express.Router(); // eslint-disable-line new-cap
 const robotApi = new RobotAPI();
@@ -95,6 +95,18 @@ router.use('/stream', robotAuth.check, (req, res) => {
 router.get('/online', adminAuth.check, (req, res) => {
   const robots = robotWS.getOnlineRobots();
   res.status(200).json({ robots });
+});
+
+router.get('/gps/:id', adminAuth.check, (req, res) => {
+  const robotID = req.params.id;
+  const location = robotWS.getLocation(robotID);
+  if (!location) {
+    new Error404(`Robot is not connected or not broadcasting location`).send(
+      res
+    );
+  } else {
+    res.status(200).json({ location });
+  }
 });
 
 // for testing of socket purpose only
