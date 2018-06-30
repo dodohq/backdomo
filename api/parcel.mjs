@@ -212,4 +212,15 @@ export default class ParcelAPI {
         throw new Error500(`Internal Server Error: ${e.message}`);
       });
   }
+
+  /**
+   * get all parcels loaded inside a robot
+   * @param {string} robotID
+   * @return {Promise}
+   */
+  getParcelsInsideRobot(robotID) {
+    return Parcel.find({ robot_id: robotID }).catch(e => {
+      throw new Error500(`Internal Server Error: ${e.message}`);
+    });
+  }
 }

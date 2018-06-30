@@ -119,6 +119,15 @@ router.get('/qrcode/:parcel_token', (req, res) => {
     .catch(e => genericErrHandler(e, res));
 });
 
+router.get('/robot/:robot_id', adminAuth.check, (req, res) => {
+  const { robot_id: robotID } = req.params;
+
+  parcelApi
+    .getParcelsInsideRobot(robotID)
+    .then(parcels => res.status(200).json({ parcels }))
+    .catch(e => genericErrHandler(e, res));
+});
+
 router.post(
   '/load',
   robotAuth.check,

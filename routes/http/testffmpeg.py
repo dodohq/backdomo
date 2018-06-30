@@ -16,6 +16,7 @@ TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YjEyODczZGQ1ZDU3NmZmMT
 
 def on_message(ws, message):
     if message == 'start':
+        print('starting...')
         cmd = 'ffmpeg -s 1280x720 -f avfoundation -framerate 30 -i "0" -f mpegts -codec:v mpeg1video -b 800k -r 30 ' + \
             STREAMSERVER + '/api/robot/stream?token=' + TOKEN
         pro = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True,
@@ -45,13 +46,7 @@ def on_close(ws):
 
 def on_open(ws):
     print('### opened ###')
-    while True:
-      sample_gps_data = '{ "x": %.4f, "y": %.4f }' % (random.random() * 100, random.random() * 100)
-      print('sending', sample_gps_data)
-      print(time.time() * 1000)
-      ws.send(sample_gps_data)
-      time.sleep(3)
-
+    
 
 if __name__ == "__main__":
     websocket.enableTrace(True)
@@ -61,3 +56,10 @@ if __name__ == "__main__":
                                 on_close=on_close)
     ws.on_open = on_open
     ws.run_forever()
+    while True:
+          sample_gps_data = '{ "x": %.4f, "y": %.4f }' % (random.random() * 100, random.random() * 100)
+          print('sending', sample_gps_data)
+          print(time.time() * 1000)
+          ws.send(sample_gps_data)
+          time.sleep(3)
+
