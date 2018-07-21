@@ -66,6 +66,15 @@ export default class ParcelAPI {
   }
 
   /**
+   * fetch a single parcel with parcel-like object
+   * @param {Parcel} parcel
+   * @return {Promise}
+   */
+  getOneParcel(parcel) {
+    return Parcel.findOne(parcel);
+  }
+
+  /**
    * generate barcode from parcel ID
    * @param {string} id
    * @return {Promise}
@@ -100,7 +109,7 @@ export default class ParcelAPI {
 
   /**
    * generate QR Code for a parcel
-   * @param {string} id
+   * @param {String} id
    * @param {Writable} writableStream
    * @return {Promise}
    */
@@ -113,7 +122,10 @@ export default class ParcelAPI {
           resolve(
             QRCode.toFileStream(
               writableStream,
-              JSON.stringify({ id: p._id, password: p.password }),
+              JSON.stringify({
+                robot_compartment: p.robot_compartment,
+                password: p.password,
+              }),
               { scale: 10 }
             )
           );
@@ -128,7 +140,7 @@ export default class ParcelAPI {
    * @return {Promise}
    */
   getParcelToken(parcel) {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       resolve(jwt.sign(parcel, process.env.JWT_SECRET));
     });
   }

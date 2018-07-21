@@ -5,7 +5,7 @@ import CompanyAPI from '../../api/company';
 import * as parcelValidator from '../../lib/validator/parcel';
 import { AuthForRole, roles } from '../../middlewares/user_auth';
 import valErrHandler from '../../middlewares/validator_error_handler';
-import { Error401, Error404, Error500 } from '../../lib/errors/http';
+import { Error401, Error500 } from '../../lib/errors/http';
 import genericErrHandler from '../../lib/utils/http_generic_err_handler';
 import RobotAuth from '../../middlewares/robot_auth';
 
@@ -115,7 +115,7 @@ router.get('/qrcode/:parcel_token', (req, res) => {
 
   parcelApi
     .decodeParcelToken(parcelToken)
-    .then(({ _id: id }) => parcelApi.getParcelQRCode({ id }, res))
+    .then(({ id }) => parcelApi.getParcelQRCode({ id }, res))
     .catch(e => genericErrHandler(e, res));
 });
 
@@ -147,19 +147,17 @@ router.post(
 router.post(
   '/unlock',
   robotAuth.check,
-  [parcelValidator.ID, parcelValidator.PASSWORD],
+  [parcelValidator.ROBOT_COMPARTMENT, parcelValidator.PASSWORD],
   valErrHandler,
   (req, res) => {
     const { _id: robotID } = req.robot;
-    const { id, password } = req.body;
+    const { robot_compartment: robotCompartment, password } = req.body;
 
     parcelApi
-      .getParcelByID({ id })
+      .getOneParcel({ robot_id: robotID, robot_compartment: robotCompartment })
       .then(p => {
         if (password !== p.password) {
           throw new Error401('Wrong unlocking password');
-        } else if (!p.robot_id || robotID !== p.robot_id.toString()) {
-          throw new Error404('Parcel is not on this robot');
         }
 
         res.status(200).json(p);
@@ -178,15 +176,19 @@ router.post('/sms', adminAuth.check, [parcelValidator.ID], (req, res) => {
     )
     .then(([p, company]) => {
       const parcel = Object.assign({}, p._doc, { company: company._doc });
-      return Promise.all([parcelApi.getParcelToken(p._doc), parcel]);
+      return Promise.all([parcelApi.getParcelToken({ id: p._id }), parcel]);
     })
     .then(([token, p]) => {
-      if (!p.company) throw new Error500('Orphan parcel');
+      if (!p.company) {
+        throw new Error500('Orphan parcel');
+      } else if (!p.robot_id || !p.robot_compartment) {
+        throw new Error422('Parcel has not been loaded to any robot');
+      }
 
       const trimmedToken = token.replace(/\s/g, '');
       const content = `Your parcel from ${
         p.company.name
-      } has arrive.\nPlease enter:\nID: ${p._id} Password: ${
+      } has arrive.\nPlease enter:\nID: ${p.robot_compartment} Password: ${
         p.password
       }\nOr go to this link: https://${
         req.hostname
