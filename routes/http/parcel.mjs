@@ -160,7 +160,9 @@ router.post(
           throw new Error401('Wrong unlocking password');
         }
 
-        res.status(200).json(p);
+        return parcelApi
+          .deleteParcel({ id: p._id })
+          .then(() => res.status(200).json(p));
       })
       .catch(e => genericErrHandler(e, res));
   }
