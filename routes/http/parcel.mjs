@@ -43,7 +43,7 @@ router.post(
       })
       .then(parcel => {
         parcel.password = undefined;
-        res.status(200).json({ parcel });
+        res.status(201).json({ parcel });
       })
       .catch(e => genericErrHandler(e, res));
   }
