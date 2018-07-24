@@ -131,14 +131,19 @@ router.get('/robot/:robot_id', adminAuth.check, (req, res) => {
 router.post(
   '/load',
   robotAuth.check,
-  [parcelValidator.ROBOT_ID, parcelValidator.ROBOT_COMPARTMENT],
+  [
+    parcelValidator.ID,
+    parcelValidator.ROBOT_ID,
+    parcelValidator.ROBOT_COMPARTMENT,
+    parcelValidator.UUID,
+  ],
   valErrHandler,
   (req, res) => {
     const { _id: robotID } = req.robot;
-    const { robot_compartment: robotCompartment, id } = req.body;
+    const { robot_compartment: robotCompartment, id, uuid } = req.body;
 
     parcelApi
-      .editParcelDetails({ id, robotID, robotCompartment })
+      .editParcelDetails({ id, robotID, robotCompartment, uuid })
       .then(p => res.status(200).json(p))
       .catch(e => genericErrHandler(e, res));
   }
