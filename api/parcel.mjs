@@ -123,7 +123,7 @@ export default class ParcelAPI {
             QRCode.toFileStream(
               writableStream,
               JSON.stringify({
-                robot_compartment: p.robot_compartment,
+                uuid: p.uuid,
                 password: p.password,
               }),
               { scale: 10 }

@@ -195,7 +195,7 @@ router.post('/sms', adminAuth.check, [parcelValidator.ID], (req, res) => {
       const trimmedToken = token.replace(/\s/g, '');
       const content = `Your parcel from ${
         p.company.name
-      } has arrive.\nPlease enter:\nID: ${p.robot_compartment} Password: ${
+      } has arrive.\nPlease enter passcode: ${p.uuid}${
         p.password
       }\nOr go to this link: https://${
         req.hostname
