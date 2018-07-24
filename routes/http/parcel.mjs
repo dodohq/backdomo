@@ -152,14 +152,14 @@ router.post(
 router.post(
   '/unlock',
   robotAuth.check,
-  [parcelValidator.ROBOT_COMPARTMENT, parcelValidator.PASSWORD],
+  [parcelValidator.PASSWORD, parcelValidator.UUID],
   valErrHandler,
   (req, res) => {
     const { _id: robotID } = req.robot;
-    const { robot_compartment: robotCompartment, password } = req.body;
+    const { uuid, password } = req.body;
 
     parcelApi
-      .getOneParcel({ robot_id: robotID, robot_compartment: robotCompartment })
+      .getOneParcel({ robot_id: robotID, uuid })
       .then(p => {
         if (password !== p.password) {
           throw new Error401('Wrong unlocking password');
