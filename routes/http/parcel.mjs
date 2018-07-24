@@ -131,14 +131,19 @@ router.get('/robot/:robot_id', adminAuth.check, (req, res) => {
 router.post(
   '/load',
   robotAuth.check,
-  [parcelValidator.ROBOT_ID, parcelValidator.ROBOT_COMPARTMENT],
+  [
+    parcelValidator.ID,
+    parcelValidator.ROBOT_ID,
+    parcelValidator.ROBOT_COMPARTMENT,
+    parcelValidator.UUID,
+  ],
   valErrHandler,
   (req, res) => {
     const { _id: robotID } = req.robot;
-    const { robot_compartment: robotCompartment, id } = req.body;
+    const { robot_compartment: robotCompartment, id, uuid } = req.body;
 
     parcelApi
-      .editParcelDetails({ id, robotID, robotCompartment })
+      .editParcelDetails({ id, robotID, robotCompartment, uuid })
       .then(p => res.status(200).json(p))
       .catch(e => genericErrHandler(e, res));
   }
@@ -147,14 +152,14 @@ router.post(
 router.post(
   '/unlock',
   robotAuth.check,
-  [parcelValidator.ROBOT_COMPARTMENT, parcelValidator.PASSWORD],
+  [parcelValidator.PASSWORD, parcelValidator.UUID],
   valErrHandler,
   (req, res) => {
     const { _id: robotID } = req.robot;
-    const { robot_compartment: robotCompartment, password } = req.body;
+    const { uuid, password } = req.body;
 
     parcelApi
-      .getOneParcel({ robot_id: robotID, robot_compartment: robotCompartment })
+      .getOneParcel({ robot_id: robotID, uuid })
       .then(p => {
         if (password !== p.password) {
           throw new Error401('Wrong unlocking password');
@@ -190,7 +195,7 @@ router.post('/sms', adminAuth.check, [parcelValidator.ID], (req, res) => {
       const trimmedToken = token.replace(/\s/g, '');
       const content = `Your parcel from ${
         p.company.name
-      } has arrive.\nPlease enter:\nID: ${p.robot_compartment} Password: ${
+      } has arrive.\nPlease enter passcode: ${p.uuid}${
         p.password
       }\nOr go to this link: https://${
         req.hostname

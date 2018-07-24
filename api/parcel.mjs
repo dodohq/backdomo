@@ -123,7 +123,7 @@ export default class ParcelAPI {
             QRCode.toFileStream(
               writableStream,
               JSON.stringify({
-                robot_compartment: p.robot_compartment,
+                uuid: p.uuid,
                 password: p.password,
               }),
               { scale: 10 }
@@ -169,6 +169,7 @@ export default class ParcelAPI {
    * @param {string} customerContact
    * @param {string} robotID
    * @param {string} robotCompartment
+   * @param {string} uuid
    * @return {Promise}
    */
   editParcelDetails({
@@ -178,6 +179,7 @@ export default class ParcelAPI {
     customerContact,
     robotID,
     robotCompartment,
+    uuid,
   }) {
     return Parcel.findById(id)
       .then(p => {
@@ -188,6 +190,7 @@ export default class ParcelAPI {
         if (customerContact) p.customer_contact = customerContact;
         if (robotID) p.robot_id = robotID;
         if (robotCompartment) p.robot_compartment = robotCompartment;
+        if (uuid) p.uuid = uuid;
         return p.save();
       })
       .catch(e => {

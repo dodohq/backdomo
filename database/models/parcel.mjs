@@ -19,6 +19,21 @@ const ParcelSchema = new mongoose.Schema({
   },
   robot_compartment: {
     type: String,
+    required: [
+      function() {
+        return !!this.robot_id; // eslint-disable-line no-invalid-this
+      },
+      '`robot_compartment` is required on robot loading',
+    ],
+  },
+  uuid: {
+    type: String,
+    required: [
+      function() {
+        return !!this.robot_id; // eslint-disable-line no-invalid-this
+      },
+      '`uuid` is required on robot loading',
+    ],
   },
 });
 
