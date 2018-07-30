@@ -105,14 +105,12 @@ class RobotWS {
   /**
    * send command to robot
    * @param {string} robotID
-   * @param {enum<'start', 'end', 'up','down','left','right'>} cmd
-   * corresponds to
-   * - start streaming
-   * - stop streaming
-   * - go forward
-   * - go backward
-   * - turn left
-   * - turn right
+   * @param {string} cmd
+   * in format of /^[aob]\(-?\d*(\.\d+)?\)$/
+   * a - accelerate
+   * o - stand still
+   * b - reverse
+   * angle of wheel is inside the bracket with range [-90.00, 90.00]
    */
   command(robotID, cmd) {
     if (this.robots[robotID]) {

@@ -25,11 +25,9 @@ userWSServer.on('connection', (cli, upgradeReq) => {
     cli.robotID = robotID;
     robotWS.join(cli, robotID);
     cli.on('message', msg => {
-      if (['up', 'down', 'left', 'right'].indexOf(msg) < 0) {
-        return;
+      if (/^[aob]\(-?\d*(\.\d+)?\)$/.test(msg)) {
+        robotWS.command(cli.robotID, msg);
       }
-
-      robotWS.command(cli.robotID, msg);
     });
     cli.on('close', () => robotWS.leave(cli.id, robotID));
   });
