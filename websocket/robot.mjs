@@ -114,7 +114,9 @@ class RobotWS {
    */
   command(robotID, cmd) {
     if (this.robots[robotID]) {
-      this.robots[robotID].send(cmd);
+      if (this.robots[robotID].readyState === WebSocket.OPEN) {
+        this.robots[robotID].send(cmd);
+      }
     }
   }
 
